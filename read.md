@@ -154,3 +154,208 @@ randomValue = 'Mateo';
 console.log(randomValue.name);  // Error: Object is of type unknown
 randomValue();                  // Error: Object is of type unknown
 randomValue.toUpperCase();      // Error: Object is of type unknown
+
+
+## Утверждение типа
+
+Если необходимо рассматривать переменную как другой тип данных, можно использовать утверждение типа. Утверждение типа сообщает TypeScript, что вы выполнили все специальные проверка, необходимые перед вызовом инструкции. Это как бы говорит компилятору: "доверься мне, я знаю, что делаю". Утверждение типа похоже на приведение типа в других языках, но не предусматривает специальной проверки или реструктуризации данных. Он не имеет эффекта среды выполнения и используется исключительно компилятором.
+
+Утверждения типов имеют две формы. Первая из них — синтаксис as:
+
+(randomValue as string).toUpperCase();
+
+Вторая — синтаксис с угловыми скобками:
+
+(<string>randomValue).toUpperCase();
+
+ Примечание
+
+as — предпочтительный вариант синтаксиса. В некоторых ситуациях, например в JSX, использование < > для преобразования типов в TypeScript может приводить к путанице.
+
+В приведенном ниже примере выполняется проверка того, что переменная randomValue имеет тип string, перед использованием утверждения типа для вызова метода toUpperCase.
+
+TypeScript
+
+Копировать
+let randomValue: unknown = 10;
+
+randomValue = true;
+randomValue = 'Mateo';
+
+if (typeof randomValue === "string") {
+    console.log((randomValue as string).toUpperCase());    //* Returns MATEO to the console.
+} else {
+    console.log("Error - A string was expected here.");    //* Returns an error message.
+}
+
+
+## Условия типов
+
+В предыдущем примере было продемонстрировано использование typeof в блоке if для проверки типа выражения во время выполнения. Этот условный тест называется типозащищенным.
+
+Возможно, вы знакомы с использованием typeof и instanceof в JavaScript для проверки таких условий. TypeScript поддерживает эти условия и при их использовании в блоке if изменяет определение типа соответствующим образом.
+
+-- Тип	Предикат --
+
+string	typeof s === "string"
+number	typeof n === "number"
+boolean	typeof b === "boolean"
+undefined	typeof undefined === "undefined"
+function	typeof f === "function"
+array	Array.isArray(a)
+
+
+## Типы объединений и пересечений в TypeScript
+
+Типы объединения
+Тип объединения описывает значение, которое может иметь один из нескольких типов. Эта гибкость может оказаться полезной, если значение не входит в контроль (например, значения из библиотеки, API или пользовательского ввода).)
+
+Тип any также может принимать различные типы, так зачем использовать объединение? Тип объединения ограничивает назначение значений указанным типам в союзе, в то время как any тип не имеет ограничений. Еще одна причина — поддержка технологии IntelliSense.
+
+Для разделения типов в объединении используется вертикальная черта (|). В следующем примере multiType может иметь тип number или boolean:
+
+TypeScript
+
+Копировать
+let multiType: number | boolean;
+multiType = 20;         //* Valid
+multiType = true;       //* Valid
+multiType = "twenty";   //* Invalid
+
+С помощью условий типов можно легко работать с переменной типа объединения. В этом примере функция add принимает два значения, которые могут иметь тип number или string. Если оба значения имеют числовые типы, они складываются. Если оба строкового типа, они сцепляются. В противном случае происходит ошибка.
+
+TypeScript
+
+Копировать
+function add(x: number | string, y: number | string) {
+    if (typeof x === 'number' && typeof y === 'number') {
+        return x + y;
+    }
+    if (typeof x === 'string' && typeof y === 'string') {
+        return x.concat(y);
+    }
+    throw new Error('Parameters must be numbers or strings');
+}
+console.log(add('one', 'two'));  //* Returns "onetwo"
+console.log(add(1, 2));          //* Returns 3
+console.log(add('one', 2));      //* Returns error
+
+## Типы пересечений
+
+Типы пересечений тесно связаны с типами объединения, но они используются по-разному. Тип пересечения служит для объединения двух или нескольких типов, в результате чего получается тип, имеющий все свойства исходных типов. Пересечение позволяет объединить существующие типы, чтобы получить один тип с всеми нужными функциями.
+
+В пересечении типы отделяются друг от друга амперсандом (&).
+
+Типы пересечения чаще всего используются с интерфейсами. В приведенном ниже примере определяются два интерфейса, Employee и Manager, а затем создается тип пересечения ManagementEmployee, объединяющий в себе свойства обоих интерфейсов.
+
+TypeScript
+
+Копировать
+interface Employee {
+  employeeID: number;
+  age: number;
+}
+interface Manager {
+  stockPlan: boolean;
+}
+type ManagementEmployee = Employee & Manager;
+let newManager: ManagementEmployee = {
+    employeeID: 12345,
+    age: 34,
+    stockPlan: true
+};
+
+## Литеральные типы
+
+Определение литеральных типов
+Литеральные типы представляются как объекты, массивы, функции или конструкторы и служат для создания новых типов на основе существующих.
+
+Лучше всего продемонстрировать использование литеральных типов на примере. Это определение создает литеральный тип с именем testResult, который может содержать одно из трех значений string:
+
+TypeScript
+
+Копировать
+type testResult = "pass" | "fail" | "incomplete";
+let myResult: testResult;
+myResult = "incomplete";    //* Valid
+myResult = "pass";          //* Valid
+myResult = "failure";       //* Invalid
+
+
+TypeScript
+
+Копировать
+type dice = 1 | 2 | 3 | 4 | 5 | 6;
+let diceRoll: dice;
+diceRoll = 1;    //* Valid
+diceRoll = 2;    //* Valid
+diceRoll = 7;    //* Invalid
+
+
+## Типы коллекций в TypeScript
+
+
+Типы объектов — это все классы, интерфейс, массив и литеральные типы (все, что не является примитивным типом). Теперь рассмотрим типы массивов и кортежей.
+
+Массивы
+В TypeScript, как и в JavaScript, можно работать с массивами. Они записываются одним из двух способов. В первом случае указывается тип элементов, за которым стоят квадратные скобки ([ ]) для обозначения массива элементов этого типа:
+
+TypeScript
+
+Копировать
+let list: number[] = [1, 2, 3];
+Во втором случае используется универсальный тип Array и синтаксис Array<type>:
+
+TypeScript
+
+Копировать
+let list: Array<number> = [1, 2, 3];
+Нет никакого преимущества использовать один над другим, поэтому вам нужно решить, какой синтаксис следует использовать.
+
+Кортежи
+Массивы со значениями одного типа полезны, но иногда требуется массив со смешанными значениями. Для этого в TypeScript есть тип кортежа. Чтобы объявить кортеж, используйте синтаксис variableName: [type, type, ...].
+
+Упражнение. Кортежи
+Откройте тестовую площадку и удалите существующий код.
+
+Введите следующий код, чтобы создать кортеж с элементами string и number:
+
+TypeScript
+
+Копировать
+let person1: [string, number] = ['Marcia', 35];
+Попробуйте добавить еще один элемент в массив. Например:
+
+TypeScript
+
+Копировать
+let person1: [string, number] = ['Marcia', 35, true];
+Обратите внимание, что возникает ошибка, так как элементы кортежа array исправлены. Кортеж person1 — это массив, содержащий ровно одно значение string и ровно одно значение numeric.
+
+Попробуйте поменять элементы в массиве местами. Например:
+
+TypeScript
+
+Копировать
+let person1: [string, number] = [35, 'Marcia'];
+Вы получите сообщение об ошибке, указывающее, что порядок значений должен соответствовать порядку типов.
+
+-----------------------------------------------------------------
+
+### Anonymous Functions
+
+Anonymous functions are a little bit different from function declarations. When a function appears in a place where TypeScript can determine how it’s going to be called, the parameters of that function are automatically given types.
+
+Here’s an example:
+
+const names = ["Alice", "Bob", "Eve"];
+ 
+// Contextual typing for function - parameter s inferred to have type string
+names.forEach(function (s) {
+  console.log(s.toUpperCase());
+});
+ 
+// Contextual typing also applies to arrow functions
+names.forEach((s) => {
+  console.log(s.toUpperCase());
+});

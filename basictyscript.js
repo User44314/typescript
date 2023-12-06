@@ -1,4 +1,6 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.logPerson = exports.users = void 0;
 function addNumbers(x, y) {
     return x + y;
 }
@@ -9,7 +11,7 @@ var ContractStatus;
     ContractStatus[ContractStatus["Temp"] = 1] = "Temp";
     ContractStatus[ContractStatus["Apprentice"] = 2] = "Apprentice";
 })(ContractStatus || (ContractStatus = {}));
-let employeeStatus = ContractStatus.Temp;
+var employeeStatus = ContractStatus.Temp;
 console.log(employeeStatus);
 /* enum ContractStatus {
   Permanent = 1,
@@ -17,3 +19,23 @@ console.log(employeeStatus);
   Apprentice,
 } */
 console.log(ContractStatus[employeeStatus]);
+exports.users = [
+    {
+        name: 'Max Mustermann',
+        age: 25,
+        occupation: 'Chimney sweep'
+    },
+    {
+        name: 'Kate Müller',
+        age: 23,
+        occupation: 'Astronaut'
+    }
+];
+function logPerson(user) {
+    console.log(" - ".concat(user.name, ", ").concat(user.age));
+}
+exports.logPerson = logPerson;
+console.log('Users:');
+exports.users.forEach(logPerson);
+// In case you are stuck:
+// https://www.typescriptlang.org/docs/handbook/2/objects.html
